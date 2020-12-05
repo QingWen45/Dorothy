@@ -2,7 +2,7 @@
 name = "dorothy"
 version = "0.1.0"
 description = "dorothy"
-authors = []
+authors = [4qw5]
 readme = "README.md"
 
 [tool.poetry.dependencies]
