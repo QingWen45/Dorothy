@@ -1,5 +1,11 @@
 # Dorothy
 
+<div align=center><img src="https://github.com/QingWen45/Dorothy/blob/master/images/Dorothy.png"/></div>
+
+心血来潮给项目画了个像素画，绘于12月6日。
+
+---
+
 ## 介绍
 
 为了给日益变得无聊的群组带来一些生气，让群友们在对~~色图~~的追求之外多产生一些来群里逛一逛，看看他们的老群主的欲望。
