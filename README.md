@@ -1,9 +1,6 @@
 # Dorothy
 
-
-![image](https://github.com/QingWen45/Dorothy/blob/master/images/Dorothy.png)
-
-<div align=center><img width="150" height="150" src="https://github.com/QingWen45/Dorothy/blob/master/images/Dorothy.png"/></div>
+<div align=center><img width="600" height="600" src="https://github.com/QingWen45/Dorothy/blob/master/images/Dorothy.png"/></div>
 
 <style type="text/css">
 img{text-align: center; margin: 0 auto;}
