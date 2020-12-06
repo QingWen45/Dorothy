@@ -1,6 +1,7 @@
 # Dorothy
-(
-![image](https://github.com/QingWen45/Dorothy/blob/master/images/Dorothy.png)
+
+
+<center>![image](https://github.com/QingWen45/Dorothy/blob/master/images/Dorothy.png)</center>
 
 心血来潮给项目画了个像素画，绘于12月6日。
 
