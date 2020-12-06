@@ -1,7 +1,11 @@
 # Dorothy
 
 
-<center>![image](https://github.com/QingWen45/Dorothy/blob/master/images/Dorothy.png)</center>
+![image](https://github.com/QingWen45/Dorothy/blob/master/images/Dorothy.png）
+
+<style type="text/css">
+img{text-align: center; margin: 0 auto;}
+</style>
 
 心血来潮给项目画了个像素画，绘于12月6日。
 
