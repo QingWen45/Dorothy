@@ -1,10 +1,6 @@
 # Dorothy
 
-<div align=center><img width="600" height="600" src="https://github.com/QingWen45/Dorothy/blob/master/images/Dorothy.png"/></div>
-
-<style type="text/css">
-img{text-align: center; margin: 0 auto;}
-</style>
+<div align=center><img width="600" src="https://github.com/QingWen45/Dorothy/blob/master/images/Dorothy.png"/></div>
 
 心血来潮给项目画了个像素画，绘于12月6日。
 
