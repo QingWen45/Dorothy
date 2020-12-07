@@ -19,7 +19,7 @@ from nonebot.log import logger
 
 from src.utils.rules import is_banned
 
-RECORD = Path("./King_of Repeaters.json")
+RECORD = Path("./src/plugins/repeater/King_of_Repeaters.json")
 if not RECORD.is_file():
     with open(RECORD, 'w') as f:
         data = {}
@@ -51,12 +51,12 @@ async def _(bot: Bot, event: Event, state: dict):
     user_id = str(event.user_id)
     group = str(event.group_id)
 
-    rec = records.get(group)
-    if rec is None:
+    if group not in records:
         rec = Record(msg, user_id, 1)
         records[group] = rec
         return
 
+    rec = records.get(group)
     if rec.last_msg != msg:
         rec.last_msg = msg
         rec.repeat_count = 1
@@ -64,9 +64,8 @@ async def _(bot: Bot, event: Event, state: dict):
 
     rec.repeat_count += 1
 
-    if rec.repeat_count == 3:
-        times = data.get(msg)
-        if times is None:
+    if rec.repeat_count == 2:
+        if msg not in data:
             data[msg] = 1
         else:
             data[msg] += 1
@@ -75,3 +74,16 @@ async def _(bot: Bot, event: Event, state: dict):
         delay = randint(5, 20) / 10
         await asyncio.sleep(delay)
         await repeater.finish(msg)
+
+
+repeater_rank = on_command("frank", aliases={"复读榜"})
+
+
+@repeater_rank.handle()
+async def _(bot: Bot, event: Event, state: dict):
+    rank = sorted(data.items(), key=lambda kv: (kv[1], kv[0]))
+    msg = "------+++复读榜+++------\n"
+    size = 3 if len(rank) > 3 else len(rank)
+    for i in range(size):
+        msg += str(i) + ". " + rank[i][0] + " 被复读了足足 " + str(rank[i][1]) + " 次！\n"
+    await repeater_rank.finish(msg)
