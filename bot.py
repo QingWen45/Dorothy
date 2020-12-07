@@ -8,7 +8,6 @@
 
 import nonebot
 
-# You can pass some keyword args config to init function
 nonebot.init(_env_file=".env.dev")
 app = nonebot.get_asgi()
 

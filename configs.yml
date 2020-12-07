@@ -1,0 +1,15 @@
+bot:
+  # 反向ws地址
+  HOST : 127.0.0.1
+  # 端口
+  PORT : 5700
+  # debug模式
+  DEBUG : true
+  # 超级用户列表
+  SUPERUSERS : [1007928648]
+  # 昵称
+  NICKNAME : [Dorothy, dorothy]
+  # 命令标识头
+  COMMAND_START : ["", "/"]
+  #命令分离符号
+  COMMAND_SEP : ["."]
