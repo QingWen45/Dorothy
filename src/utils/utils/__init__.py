@@ -10,8 +10,8 @@ def counter(l: list, elm) -> int:
     """
     检查元素出现次数
     """
-    sum = 0
+    elm_sum = 0
     for i in l:
         if i == elm:
-            sum += 1
-    return sum
+            elm_sum += 1
+    return elm_sum
