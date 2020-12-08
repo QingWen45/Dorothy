@@ -12,11 +12,13 @@ from random import randint
 from nonebot.typing import Bot, Event
 from nonebot.plugin import on_command
 
+from src.utils.rules import is_banned
+
 safe_left = 0
 current_bullet_num = 0
 players = {}
 
-spin = on_command("rr")
+spin = on_command("rr", rule=is_banned())
 
 
 @spin.handle()
