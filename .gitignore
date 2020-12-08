@@ -12,6 +12,7 @@ gen
 __pycache__/
 *.py[cod]
 *$py.class
+*.yml
 
 # C extensions
 *.so
