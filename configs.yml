@@ -13,3 +13,9 @@ bot:
   COMMAND_START : ["", "/"]
   #命令分离符号
   COMMAND_SEP : ["."]
+
+hefeng:
+  SEARCH_API: https://geoapi.qweather.com/v2/city/lookup?
+  WEATHER_NOW_API: https://devapi.qweather.com/v7/weather/now?
+  AIR_NOW_API: https://devapi.qweather.com/v7/air/now?
+  KEY: 50bf6718eee8448f991f89f423e63afb
