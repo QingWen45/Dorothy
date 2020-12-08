@@ -51,12 +51,15 @@ async def _(bot: Bot, event: Event, state: dict):
                                    group_id=event.group_id,
                                    user_id=event.user_id,
                                    duration=60)
+                players[user_name]["point"] /= 2
                 players[user_name]["death"] += 1
                 current_bullet_num -= 1
                 if current_bullet_num == 0:
+
                     await bot.send(event, "感谢各位的参与，以下是游戏结算:")
                     await asyncio.sleep(1)
                     rank = sorted(players.items(), key=lambda x: (x[1]["point"], x[0]))
+
                     msg = ''
                     for i, data in enumerate(rank):
                         if i != len(players) - 1:
@@ -65,6 +68,7 @@ async def _(bot: Bot, event: Event, state: dict):
                             msg += ("%s:\nP: %s分 D: %s" % (data[0], data[1]["point"], data[1]["death"]))
                     players.clear()
                     await spin.finish(msg)
+
                 else:
                     msg = "有请下一位，还有 %d 发" % current_bullet_num
                     safe_left = safe_couter(current_bullet_num)
@@ -94,7 +98,7 @@ def safe_couter(cur_num: int) -> int:
     计算距离下一枪还有几次
     """
     n = 6 - randint(1, 6)
-    if n > cur_num:
+    if n <= cur_num:
         return 0
     else:
-        return n
+        return 6-n+1
