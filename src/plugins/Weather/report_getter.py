@@ -19,17 +19,22 @@ async def location_get(loc: list):
     """
     由原始名称获取地点
     """
-    location = {"key": key}
+    if not loc:
+        return False
+
+    location = {"key": key, "number": "1"}
     loc.reverse()
     for i, v in enumerate(loc):
-        location["location"] = v
-        if i < 3:
-            location[f"adm{i}"] = v
+        if i == 0:
+            location["location"] = v
+        elif i < 3:
+            location[f"adm{i+1}"] = v
         else:
-            return []
-    print(location)
+            return False
+
     async with httpx.AsyncClient() as client:
-        r = await client.get(api_config["SEARCH_API"], params=location).json()
+        r = await client.get(api_config["SEARCH_API"], params=location)
+    r = r.json()
     if r["code"] == "200":
         first_loc = r["location"][0]
         name = first_loc["adm1"] + first_loc["adm2"] + first_loc["name"]
@@ -37,8 +42,30 @@ async def location_get(loc: list):
         print([name, loc_id])
         return [name, loc_id]
     else:
-        return []
+        return False
 
+
+async def report_get(loc_id: str):
+    """
+    获取天气报告
+    """
+    location = {"key": key, "location": loc_id}
+    async with httpx.AsyncClient() as client:
+        air_r = await client.get(api_config["AIR_NOW_API"], params=location)
+        wea_r = await client.get(api_config["WEATHER_NOW_API"], params=location)
+    air_r = air_r.json()
+    wea_r = wea_r.json()
+    if wea_r["code"] == "200":
+        tmp = wea_r["now"]
+        wea_msg = "气温: " + tmp["temp"] + "\n体感温度: " + tmp["feelsLike"] + "\n天气:" + tmp["text"]
+        if air_r["code"] == "200":
+            air_msg = "\n污染指数: " + air_r["now"]["aqi"] + " " + air_r["now"]["category"]
+            return wea_msg + air_msg
+        else:
+            return wea_msg
+
+    else:
+        return False
 
 
 
