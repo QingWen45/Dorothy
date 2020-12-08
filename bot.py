@@ -29,7 +29,6 @@ nonebot.load_plugins("src/plugins")
 
 nonebot.load_plugin("nonebot_plugin_docs")
 nonebot.load_plugin("nonebot_plugin_test")
-nonebot.load_plugin("nonebot_plugin_status")
 
 if __name__ == "__main__":
     nonebot.run(app="bot:app")
