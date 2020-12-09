@@ -28,7 +28,7 @@ async def location_get(loc: list):
         if i == 0:
             location["location"] = v
         elif i < 3:
-            location[f"adm{i+1}"] = v
+            location[f"adm{i}"] = v
         else:
             return False
 
@@ -39,7 +39,6 @@ async def location_get(loc: list):
         first_loc = r["location"][0]
         name = first_loc["adm1"] + first_loc["adm2"] + first_loc["name"]
         loc_id = first_loc["id"]
-        print([name, loc_id])
         return [name, loc_id]
     else:
         return False
