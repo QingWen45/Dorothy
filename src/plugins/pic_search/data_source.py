@@ -45,18 +45,21 @@ setu_api = configs["setu"]["API"]
 setu_key = configs["setu"]["KEY"]
 
 
-async def setu_linker(keyword=None):
+async def setu_linker(keyword=None, mode=0):
     data = {"apikey": setu_key,
-            "r18": 0,
+            "r18": mode,
             "num": 1,
             "size1200": "true"}
-    if 1:
-       # data["keyword"] = keyword
-    # try:
+    if keyword:
+        data["keyword"] = keyword
+    try:
+        print(data)
         async with httpx.AsyncClient() as client:
             response = await client.get(setu_api, params=data, timeout=60.0)
         response = response.json()
         print(response)
+        if response["code"] != 0:
+            return ""
         if response["quota"] < 20:
             return "冲得太多，额度已经用光了"
         img_data = response["data"][0]
@@ -67,5 +70,5 @@ async def setu_linker(keyword=None):
 Pid: {img_data["pid"]}
 [CQ:image,file=file:///{img_loc}]"""
         return msg
-    # except Exception:
-        # return ""
+    except Exception:
+        return ""

@@ -59,18 +59,18 @@ lsp_list = {}
 lsp_stack = []
 
 
-def check_list(user) -> bool:
+def check_list(user: str) -> bool:
     if user in lsp_list:
         return True
     return False
 
 
-def en_lsp(user):
+def en_lsp(user: str):
     global lsp_list
     lsp_list["user"] += 1
 
 
-def de_lsp(user):
+def de_lsp(user: str):
     global lsp_list
     del lsp_list["user"]
 
@@ -83,7 +83,7 @@ setu_get = on_regex(
 @setu_get.handle()
 async def _(bot: Bot, event: Event, state: dict):
     global lsp_stack
-    user = event.user_id
+    user = str(event.user_id)
 
     if check_list(user):
         await setu_get.finish("冲的太多了，休息一下吧")
@@ -99,10 +99,16 @@ async def _(bot: Bot, event: Event, state: dict):
                           misfire_grace_time=60)
         return
 
+    args = str(event.message).strip().split()
+    if len(args) > 1:
+        state["keyword"] = args[1]
+    await bot.send(event, "别急，涩图在搜索了")
+
     if search_type == 0:
-        setu = await setu_linker()
+        key = state["keyword"] if "keyword" in state else None
+        setu = await setu_linker(key, mode=search_type)
         if not setu:
-            await setu_get.finish("超时嘞")
+            await setu_get.finish("涩图找丢了")
         lsp_stack.append(user)
         logger.info(setu)
         await setu_get.finish(setu)

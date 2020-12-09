@@ -13,14 +13,14 @@ from random import sample
 import string
 from PIL import Image
 
-img_path = Path("./local_data").resolve()
+img_path = Path("./local_data/img").resolve()
+compressed_path = Path("./local_data/compressed").resolve()
 
 
-async def download_img(url: str) -> str:
+async def download_img(url: str) -> Path:
     if not img_path.exists():
         img_path.mkdir()
     name = ''.join(sample(string.ascii_letters + string.digits, 16))
-    print(url)
     img_loc = Path(str(img_path) + f"/{name}.png")
     async with httpx.AsyncClient() as client:
         response = await client.get(url, timeout=60.0)
@@ -29,12 +29,15 @@ async def download_img(url: str) -> str:
     return img_loc
 
 
-async def compress_img(img_loc: str, kb=500, quality=80, k=0.9) -> str:
+async def compress_img(img_loc: Path, kb=500, quality=80, k=0.9) -> str:
+    if not compressed_path.exists():
+        compressed_path.mkdir()
     img_size = os.path.getsize(img_loc) // 1024
     if img_size <= kb:
-        return img_loc
+        return str(img_loc)
     img = Image.open(img_loc)
-    out_loc = str(img_path) + "/compressed.png"
+    name = img_loc.name
+    out_loc = str(compressed_path) + f"{name}.png"
 
     while img_size > kb:
         x, y = img.size
