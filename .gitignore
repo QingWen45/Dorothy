@@ -149,3 +149,5 @@ dmypy.json
 cython_debug/
 
 configs.yml~origin_master
+!/local_data/
+local_data/
