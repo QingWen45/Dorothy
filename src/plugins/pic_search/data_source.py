@@ -50,11 +50,11 @@ async def setu_linker(keyword=None):
             "r18": 0,
             "num": 1,
             "size1200": "true"}
-    if keyword:
-        data["keyword"] = keyword
-    try:
+    if 1:
+       # data["keyword"] = keyword
+    # try:
         async with httpx.AsyncClient() as client:
-            response = await client.get(setu_api, params=data)
+            response = await client.get(setu_api, params=data, timeout=60.0)
         response = response.json()
         print(response)
         if response["quota"] < 20:
@@ -67,5 +67,5 @@ async def setu_linker(keyword=None):
 Pid: {img_data["pid"]}
 [CQ:image,file=file:///{img_loc}]"""
         return msg
-    except Exception:
-        return ""
+    # except Exception:
+        # return ""

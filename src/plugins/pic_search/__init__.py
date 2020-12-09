@@ -54,7 +54,7 @@ async def _(bot: Bot, event: Event, state: dict):
     await sauce_search.finish(msg[0])
 
 
-search_type = 0  # 0 is from url, while 1 is from local
+search_type = 0  # 0 is from url, while 1 is from local, 2 is closed
 lsp_list = {}
 lsp_stack = []
 
