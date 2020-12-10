@@ -18,15 +18,15 @@ hefeng:
   SEARCH_API: https://geoapi.qweather.com/v2/city/lookup?
   WEATHER_NOW_API: https://devapi.qweather.com/v7/weather/now?
   AIR_NOW_API: https://devapi.qweather.com/v7/air/now?
-  KEY: 50bf6718eee8448f991f89f423e63afb
+  KEY: 
 
 setu:
   API: https://api.lolicon.app/setu/
-  KEY: 865284495fd02aa8db6371
+  KEY: 
 
 saucenao:
   API: https://saucenao.com/search.php
-  KEY: 736ddb6c1be2f6b4aafd158177d862c78eb310ce
+  KEY: 
 
 shadiao:
   zui_chou: https://nmsl.shadiao.app/api.php?level=min&lang=zh_cn
