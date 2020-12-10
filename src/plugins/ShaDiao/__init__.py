@@ -30,7 +30,7 @@ notice_handler = on_notice(rule=is_banned(), block=True)
 @notice_handler.handle()
 async def _(bot: Bot, event: Event, state: dict):
     if str(event.raw_event["notice_type"]) == "group_increase":
-        if event.user_id == event.self_id:
+        if str(event.raw_event["user_id"] == event.self_id:
             await notice_handler.finish("大家好啊")
         else:
             await notice_handler.finish("欢迎新人")
@@ -42,6 +42,7 @@ async def _(bot: Bot, event: Event, state: dict):
     elif event.raw_event["notice_type"] == "notify":
         if event.raw_event["sub_type"] == "poke":
             if str(event.raw_event["target_id"]) == event.self_id:
+                            if str(event.raw_event["target_id"]) == event.self_id:
                 user = str(event.user_id)
                 LV = Path("./src/plugins/ShaDiao/love_value.json")
                 if not LV.is_file():
@@ -57,16 +58,17 @@ async def _(bot: Bot, event: Event, state: dict):
                     msg = f"Dorothy对 [CQ:at,qq={user}] 的初始好感为{data[user][0]}点"
 
                 else:
-                    increment = 0
                     if str(date.today()) != data[user][1]:
                         increment = randint(1, 3)
                         data[user][0] += increment
+                        if data[user][0] >= 100:
+                            msg = f"[CQ:at,qq={user}] 好感满分！100点"
+                        else:
+                            msg = f"对 [CQ:at,qq={user}] 的好感上升了{increment}点，变成{data[user][0]}点了"
+
                     else:
                         await notice_handler.finish("好感无法上升了")
 
-                    msg = f"对 [CQ:at,qq={user}] 的好感上升了{increment}点，变成{data[user][0]}点了"
-
-                logger.info(data)
                 with open(LV, 'w') as file:
                     ujson.dump(data, file)
                 await notice_handler.finish(msg)
@@ -155,7 +157,7 @@ async def _(bot: Bot, event: Event, state: dict):
     msg = "得到的翻译如下：\n"
     for i in response[0]["trans"]:
         msg += i + "，"
-    msg.strip("，")
+    msg = msg.strip("，")
     await trans.finish(msg)
 
 
