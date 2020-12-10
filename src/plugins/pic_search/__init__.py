@@ -47,7 +47,10 @@ async def _(bot: Bot, event: Event, state: dict):
         await sauce_search.reject("图呢？")
 
     await bot.send(event, "开始搜索嘞...")
-    msg = await result_get(state["user"], img[0])
+    try:
+        msg = await result_get(state["user"], img[0])
+    except Exception:
+        msg = ["超时嘞"]
     logger.info(msg)
     if len(msg) > 1:
         await bot.send(event, msg[1])
@@ -78,7 +81,7 @@ def de_lsp(user: str):
 
 setu_get = on_regex(
     r"来[点丶张份副个幅][涩色瑟][图圖]|[涩色瑟][图圖]来|[涩色瑟][图圖][gkd|GKD|搞快点]|[gkd|GKD|搞快点]",
-    rule=is_banned() & to_me())
+    rule=is_banned() & to_me(), block=True)
 
 
 @setu_get.handle()
