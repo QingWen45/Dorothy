@@ -30,3 +30,30 @@ def is_banned() -> Rule:
             data = ujson.load(f)
         return user not in data
     return Rule(_is_banned)
+
+
+def is_enabled(func_name: str, will_notice: bool) -> Rule:
+    async def _is_enabled(bot: Bot, event: Event, state: dict) -> bool:
+        group = str(event.group_id)
+        SWITCH_FILE = Path("./src/utils/func_switch/switch_list.json")
+        if not SWITCH_FILE.is_file():
+            return False
+
+        switch = "False"
+        with open(SWITCH_FILE, 'r') as file:
+            data = ujson.load(file)
+        if func_name in data:
+            if "all_enabled" in data[func_name]:
+                switch = data[func_name]["all_enabled"]
+            elif group in data[func_name]:
+                switch = data[func_name][group]
+        else:
+            switch = "False"
+
+        if switch == "True":
+            return True
+        else:
+            if will_notice:
+                await bot.send(event, f"{func_name}不可用")
+            return False
+    return Rule(_is_enabled)

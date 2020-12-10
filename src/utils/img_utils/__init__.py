@@ -17,10 +17,11 @@ img_path = Path("./local_data/img").resolve()
 compressed_path = Path("./local_data/compressed").resolve()
 
 
-async def download_img(url: str) -> Path:
+async def download_img(name: str, url: str) -> Path:
     if not img_path.exists():
+        img_path.parent.mkdir()
         img_path.mkdir()
-    name = ''.join(sample(string.ascii_letters + string.digits, 16))
+
     img_loc = Path(str(img_path) + f"/{name}.png")
     async with httpx.AsyncClient() as client:
         response = await client.get(url, timeout=60.0)
@@ -36,8 +37,8 @@ async def compress_img(img_loc: Path, kb=500, quality=80, k=0.9) -> str:
     if img_size <= kb:
         return str(img_loc)
     img = Image.open(img_loc)
-    name = img_loc.name
-    out_loc = str(compressed_path) + f"{name}.png"
+    name = img_loc.stem
+    out_loc = str(compressed_path) + f"/{name}.png"
 
     while img_size > kb:
         x, y = img.size

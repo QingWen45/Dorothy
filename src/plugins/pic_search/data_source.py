@@ -63,7 +63,7 @@ async def setu_linker(keyword=None, mode=0):
         if response["quota"] < 20:
             return "冲得太多，额度已经用光了"
         img_data = response["data"][0]
-        img_loc = await download_img(img_data["url"])
+        img_loc = await download_img(img_data["pid"], img_data["url"])
         img_loc = await compress_img(img_loc)
         msg = f"""SETU Info:
 标题: {img_data["title"]}

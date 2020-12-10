@@ -108,7 +108,6 @@ async def _(bot: Bot, event: Event, state: dict):
         key = state["keyword"] if "keyword" in state else None
         setu = await setu_linker(key, mode=search_type)
         if not setu:
-            await setu_get.finish("涩图找丢了")
+            await setu_get.finish("连接超时，涩图找丢了")
         lsp_stack.append(user)
-        logger.info(setu)
         await setu_get.finish(setu)
