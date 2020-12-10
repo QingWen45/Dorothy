@@ -80,7 +80,7 @@ def de_lsp(user: str):
 
 
 setu_get = on_regex(
-    r"来[点丶张份副个幅][涩色瑟][图圖]|[涩色瑟][图圖]来|[涩色瑟][图圖][gkd|GKD|搞快点]|[gkd|GKD|搞快点]",
+    r"来[张份个幅][涩色瑟][图]|[涩色瑟][图]来|[涩色瑟][图][gkd|GKD|搞快点]|[gkd|GKD|搞快点]",
     rule=is_banned() & to_me(), priority=8)
 
 

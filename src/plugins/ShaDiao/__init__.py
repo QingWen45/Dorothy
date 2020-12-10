@@ -168,13 +168,11 @@ async def _(bot: Bot, event: Event, state: dict):
     async with httpx.AsyncClient() as client:
         response = await client.get(api)
     await hitokoto.finish(response.text)
-
-
+"""
 music = on_command("点歌", rule=to_me())
 
 
 @music.handle()
 async def _(bot: Bot, event: Event, state: dict):
     music_id = choice(["1349937484", "1349927611", "1349932444", "1349929719"])
-    msg = f"[CQ:music,type:163,id=1349937484]"
-    await music.finish(msg)
+"""
