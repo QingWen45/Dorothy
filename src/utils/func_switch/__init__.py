@@ -15,6 +15,8 @@ def func_switcher(func_name: str, enabled: bool, group: Optional[str] = None) ->
     SWITCH_FILE = Path("./src/utils/func_switch/switch_list.json")
     if not SWITCH_FILE.is_file():
         data = {}
+        with open(SWITCH_FILE, 'w') as f:
+            ujson.dump(data, f)
     else:
         with open(SWITCH_FILE, 'r') as file:
             data = ujson.load(file)

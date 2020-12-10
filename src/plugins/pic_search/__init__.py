@@ -81,7 +81,7 @@ def de_lsp(user: str):
 
 setu_get = on_regex(
     r"来[点丶张份副个幅][涩色瑟][图圖]|[涩色瑟][图圖]来|[涩色瑟][图圖][gkd|GKD|搞快点]|[gkd|GKD|搞快点]",
-    rule=is_banned() & to_me(), block=True)
+    rule=is_banned() & to_me(), priority=8)
 
 
 @setu_get.handle()
@@ -142,6 +142,8 @@ async def _(bot: Bot, event: Event, state: dict):
     KSP = Path("./src/plugins/pic_search/King_of_LSP.json")
     if not KSP.is_file():
         sp_data = {}
+        with open(KSP, 'w') as f:
+            ujson.dump(sp_data, f)
     else:
         with open(KSP, 'r') as f:
             sp_data = ujson.load(f)
@@ -166,6 +168,8 @@ async def _(bot: Bot, event: Event, state: dict):
     KSP = Path("./src/plugins/pic_search/King_of_LSP.json")
     if not KSP.is_file():
         data = {}
+        with open(KSP, 'w') as f:
+            ujson.dump(data, f)
     else:
         with open(KSP, 'r') as f:
             data = ujson.load(f)

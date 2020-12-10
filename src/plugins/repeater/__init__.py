@@ -22,11 +22,11 @@ from src.utils.rules import is_banned
 RECORD = Path("./src/plugins/repeater/King_of_Repeaters.json")
 if not RECORD.is_file():
     with open(RECORD, 'w') as f:
-        data = {}
-        ujson.dump(data, f)
+        repeat_data = {}
+        ujson.dump(repeat_data, f)
 else:
     with open(RECORD, 'r') as f:
-        data = ujson.load(f)
+        repeat_data = ujson.load(f)
 
 
 # 保存单个记录
@@ -65,12 +65,12 @@ async def _(bot: Bot, event: Event, state: dict):
     rec.repeat_count += 1
 
     if rec.repeat_count == 2:
-        if msg not in data:
-            data[msg] = 1
+        if msg not in repeat_data:
+            repeat_data[msg] = 1
         else:
-            data[msg] += 1
+            repeat_data[msg] += 1
         with open(RECORD, 'w') as file:
-            ujson.dump(data, file)
+            ujson.dump(repeat_data, file)
         delay = randint(5, 20) / 10
         await asyncio.sleep(delay)
         await repeater.finish(msg)
@@ -81,7 +81,7 @@ repeater_rank = on_command("frank", aliases={"复读榜"})
 
 @repeater_rank.handle()
 async def _(bot: Bot, event: Event, state: dict):
-    rank = sorted(data.items(), key=lambda kv: (kv[1], kv[0]), reverse=True)
+    rank = sorted(repeat_data.items(), key=lambda kv: (kv[1], kv[0]), reverse=True)
     msg = "------+++复读榜+++------\n"
     size = 3 if len(rank) > 3 else len(rank)
     for i in range(size):

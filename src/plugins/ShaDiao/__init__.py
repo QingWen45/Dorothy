@@ -6,23 +6,18 @@
 # @Author : QingWen
 # @E-mail : hurrsea@outlook.com
 
-import re
 import ujson
 import httpx
 from pathlib import Path
 from random import choice, randint
-from datetime import datetime, timedelta, date
-from apscheduler.triggers.date import DateTrigger
+from datetime import date
 
 from nonebot.log import logger
 from nonebot.rule import to_me
-from nonebot.sched import scheduler
 from nonebot.typing import Bot, Event
-from nonebot.permission import SUPERUSER
 from nonebot.plugin import on_command, on_notice, on_keyword
 
 from src.utils.utils import counter
-from src.utils.ban import ban, unban
 from src.utils.rules import is_banned
 from src.utils.yaml_loader import yml_loader
 
@@ -50,17 +45,19 @@ async def _(bot: Bot, event: Event, state: dict):
             LV = Path("./src/plugins/ShaDiao/love_value.json")
             if not LV.is_file():
                 data = {}
+                with open(LV, 'w') as f:
+                    ujson.dump(data, f)
             else:
                 with open(LV, 'r') as f:
                     data = ujson.load(f)
 
             if user not in data:
                 data[user] = [randint(1, 100), str(date.today())]
-                msg = f"Dorothy对 [CQ:at,qq={user}] 的初始好感为{date[user][0]}点"
+                msg = f"Dorothy对 [CQ:at,qq={user}] 的初始好感为{data[user][0]}点"
 
             else:
                 increment = 0
-                if str(date.today()) != date[user][1]:
+                if str(date.today()) != data[user][1]:
                     increment = randint(1, 3)
                     data[user][0] += increment
                 else:
@@ -93,7 +90,7 @@ async def _(bot: Bot, event: Event, state: dict):
     api = config["shadiao"]["zui_chou"]
     if count < 7:
         count_list_n.append(user)
-    async with httpx.AsyncClient as client:
+    async with httpx.AsyncClient() as client:
         response = await client.get(api)
     await nmsl.finish(response.text)
 
@@ -105,19 +102,19 @@ pyq = on_keyword({"朋友圈"}, rule=to_me())
 async def _(bot: Bot, event: Event, state: dict):
     api = config["shadiao"]["peng_you_quan"]
 
-    async with httpx.AsyncClient as client:
+    async with httpx.AsyncClient() as client:
         response = await client.get(api)
     await pyq.finish(response.text)
 
 
-chp = on_command("夸我", rule=to_me())
+chp = on_keyword({"夸"}, rule=to_me())
 
 
 @chp.handle()
 async def _(bot: Bot, event: Event, state: dict):
     api = config["shadiao"]["rainbow_fart"]
 
-    async with httpx.AsyncClient as client:
+    async with httpx.AsyncClient() as client:
         response = await client.get(api)
     await chp.finish(response.text)
 
@@ -129,7 +126,7 @@ djt = on_keyword({"毒鸡汤"}, rule=to_me())
 async def _(bot: Bot, event: Event, state: dict):
     api = config["shadiao"]["du_ji_tang"]
 
-    async with httpx.AsyncClient as client:
+    async with httpx.AsyncClient() as client:
         response = await client.get(api)
     await djt.finish(response.text)
 
@@ -149,7 +146,7 @@ async def _(bot: Bot, event: Event, state: dict):
 async def _(bot: Bot, event: Event, state: dict):
     api = config["shadiao"]["nbnhhsh"]
     data = {"text": state["text"]}
-    async with httpx.AsyncClient as client:
+    async with httpx.AsyncClient() as client:
         response = await client.post(api, data=data)
     response = response.json()
     if not response:
@@ -168,7 +165,7 @@ hitokoto = on_command("一言", rule=to_me())
 async def _(bot: Bot, event: Event, state: dict):
     api = config["ad_api"]["hitokoto"]
 
-    async with httpx.AsyncClient as client:
+    async with httpx.AsyncClient() as client:
         response = await client.get(api)
     await hitokoto.finish(response.text)
 
@@ -179,5 +176,5 @@ music = on_command("点歌", rule=to_me())
 @music.handle()
 async def _(bot: Bot, event: Event, state: dict):
     music_id = choice(["1349937484", "1349927611", "1349932444", "1349929719"])
-    msg = f"[CQ:music,type:163,id={music_id}]"
+    msg = f"[CQ:music,type:163,id=1349937484]"
     await music.finish(msg)

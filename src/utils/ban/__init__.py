@@ -11,12 +11,6 @@ from pathlib import Path
 
 BAN_LIST_FILE = Path("./src/utils/ban/ban_list.json")
 # 如果文件不存在，则创建一个空文件
-if not BAN_LIST_FILE.is_file():
-    with open(BAN_LIST_FILE, 'w') as f:
-        ujson.dump({}, f)
-
-with open(BAN_LIST_FILE, 'r') as f:
-    data = ujson.load(f)
 
 
 def ban(user: str):
@@ -25,9 +19,15 @@ def ban(user: str):
     :param user: str
     :return: none
     """
-    data[user] = user
+    if not BAN_LIST_FILE.is_file():
+        with open(BAN_LIST_FILE, 'w') as f:
+            ujson.dump({}, f)
+    with open(BAN_LIST_FILE, 'r') as f:
+        ban_data = ujson.load(f)
+
+    ban_data[user] = user
     with open(BAN_LIST_FILE, 'w') as file:
-        ujson.dump(data, file)
+        ujson.dump(ban_data, file)
 
 
 def unban(user: str):
@@ -36,6 +36,12 @@ def unban(user: str):
     :param user: str
     :return: none
     """
-    del data[user]
+    if not BAN_LIST_FILE.is_file():
+        with open(BAN_LIST_FILE, 'w') as f:
+            ujson.dump({}, f)
+    with open(BAN_LIST_FILE, 'r') as f:
+        ban_data = ujson.load(f)
+
+    del ban_data[user]
     with open(BAN_LIST_FILE, 'w') as file:
-        ujson.dump(data, file)
+        ujson.dump(ban_data, file)
