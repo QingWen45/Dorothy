@@ -6,7 +6,7 @@ bot:
   # debug模式
   DEBUG : true
   # 超级用户列表
-  SUPERUSERS : [1007928648]
+  SUPERUSERS : []
   # 昵称
   NICKNAME : [Dorothy, dorothy]
   # 命令标识头
