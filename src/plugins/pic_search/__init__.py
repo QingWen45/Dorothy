@@ -21,7 +21,7 @@ from nonebot.plugin import on_command, on_regex
 from src.utils.utils import counter
 from src.utils.rules import is_banned, is_enabled
 
-from .data_source import result_get, setu_linker
+from .data_source import result_get, setu_linker, setu_loader
 
 sauce_search = on_command("picsearch", aliases={"搜图"}, rule=is_banned())
 
@@ -83,7 +83,7 @@ setu_get = on_regex(
 
 @setu_get.handle()
 async def _(bot: Bot, event: Event, state: dict):
-    global lsp_stack
+    global lsp_stack, search_type
     user = str(event.user_id)
     group = str(event.group_id)
 
@@ -114,6 +114,8 @@ async def _(bot: Bot, event: Event, state: dict):
     args = str(event.message).strip().split()
     if len(args) > 1:
         state["keyword"] = args[1]
+        if state["keyword"] == "local":
+            search_type = 1
     await bot.send(event, "别急，涩图在搜索了")
 
     if search_type == 0:
@@ -121,32 +123,36 @@ async def _(bot: Bot, event: Event, state: dict):
 
         setu = await setu_linker(user, key, mode=r18_switch)
 
-        if not setu:
-            await setu_get.finish(f"[CQ:at,qq={user}]连接超时，涩图找丢了")
-        lsp_stack.append(user)
+    else:
+        setu = await setu_loader(user)
+        logger.info(setu)
 
-        # lsp榜单更新
-        if event.sender["card"] != "":
-            user_name = event.sender["card"]
-        else:
-            user_name = event.sender["nickname"]
-        KSP = Path("./src/plugins/pic_search/King_of_LSP.json")
-        if not KSP.is_file():
-            sp_data = {}
-        else:
-            with open(KSP, 'r') as f:
-                sp_data = ujson.load(f)
-        if group not in sp_data:
-            sp_data[group] = {}
+    if not setu:
+        await setu_get.finish(f"[CQ:at,qq={user}]连接超时，涩图找丢了")
+    lsp_stack.append(user)
 
-        if user not in sp_data[group]:
-            sp_data[group][user_name] = 0
-        sp_data[group][user_name] += 1
-        logger.info(sp_data)
-        with open(KSP, 'w') as file:
-            ujson.dump(sp_data, file)
+    # lsp榜单更新
+    if event.sender["card"] != "":
+        user_name = event.sender["card"]
+    else:
+        user_name = event.sender["nickname"]
+    KSP = Path("./src/plugins/pic_search/King_of_LSP.json")
+    if not KSP.is_file():
+        sp_data = {}
+    else:
+        with open(KSP, 'r') as f:
+            sp_data = ujson.load(f)
+    if group not in sp_data:
+        sp_data[group] = {}
 
-        await setu_get.finish(setu)
+    if user_name not in sp_data[group]:
+        sp_data[group][user_name] = 0
+    sp_data[group][user_name] += 1
+    logger.info(sp_data)
+    with open(KSP, 'w') as file:
+        ujson.dump(sp_data, file)
+
+    await setu_get.finish(setu)
 
 
 lsp_rank = on_command("sprank", aliases={"lsp榜"})

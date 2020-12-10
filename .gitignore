@@ -151,3 +151,6 @@ cython_debug/
 configs.yml~origin_master
 !/local_data/
 local_data/
+!/src/plugins/pic_search/on_list.json
+!/src/utils/ban/ban_list.json
+!/src/utils/func_switch/switch_list.json

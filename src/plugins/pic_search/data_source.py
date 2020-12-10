@@ -8,6 +8,7 @@
 
 import httpx
 from pathlib import Path
+from random import choice
 from src.utils.yaml_loader import yml_loader
 from src.utils.img_utils import compress_img, download_img
 
@@ -63,12 +64,27 @@ async def setu_linker(user: str, keyword=None, mode=0):
         if response["quota"] < 20:
             return "冲得太多，额度已经用光了"
         img_data = response["data"][0]
+
         img_loc = await download_img(img_data["pid"], img_data["url"])
         img_loc = await compress_img(img_loc)
-        msg = f"""SETU Info:
+
+        msg = f"""[CQ:at,qq={user}]
+SETU Info:
 标题: {img_data["title"]}
 Pid: {img_data["pid"]}
 [CQ:image,file=file:///{img_loc}]"""
         return msg
     except Exception:
         return ""
+
+
+async def setu_loader(user: str) -> str:
+    img_file = Path("./local_data/compressed")
+    images = list(img_file.iterdir())
+    img_loc = choice(images).resolve()
+    Pid = img_loc.stem
+    msg = f"""[CQ:at,qq={user}]
+SETU Info:
+Pid: {Pid}
+[CQ:image,file=file:///{str(img_loc)}]"""
+    return msg
