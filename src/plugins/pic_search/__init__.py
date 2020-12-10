@@ -68,17 +68,17 @@ def check_list(user: str) -> bool:
 
 def en_lsp(user: str):
     global lsp_list
-    lsp_list["user"] += 1
+    lsp_list[user] += 1
 
 
 def de_lsp(user: str):
     global lsp_list
-    del lsp_list["user"]
+    del lsp_list[user]
 
 
 setu_get = on_regex(
     r"来[点丶张份副个幅][涩色瑟][图圖]|[涩色瑟][图圖]来|[涩色瑟][图圖][gkd|GKD|搞快点]|[gkd|GKD|搞快点]",
-    rule=is_banned() & to_me() & is_enabled(_func_name, True))
+    rule=is_banned() & to_me())
 
 
 @setu_get.handle()
@@ -87,6 +87,8 @@ async def _(bot: Bot, event: Event, state: dict):
     user = str(event.user_id)
     group = str(event.group_id)
 
+    if not is_enabled(_func_name, True, group):
+        await setu_get.finish("该功能不可用")
     if check_list(user):
         await setu_get.finish("冲的太多了，休息一下吧")
 
@@ -116,9 +118,11 @@ async def _(bot: Bot, event: Event, state: dict):
 
     if search_type == 0:
         key = state["keyword"] if "keyword" in state else None
-        setu = await setu_linker(key, mode=r18_switch)
+
+        setu = await setu_linker(user, key, mode=r18_switch)
+
         if not setu:
-            await setu_get.finish("连接超时，涩图找丢了")
+            await setu_get.finish(f"[CQ:at,qq={user}]连接超时，涩图找丢了")
         lsp_stack.append(user)
 
         # lsp榜单更新
@@ -135,10 +139,10 @@ async def _(bot: Bot, event: Event, state: dict):
         if group not in sp_data:
             sp_data[group] = {}
 
-        if user not in sp_data:
-            sp_data[group][user_name] = 1
-        else:
-            sp_data[group][user_name] += 1
+        if user not in sp_data[group]:
+            sp_data[group][user_name] = 0
+        sp_data[group][user_name] += 1
+        logger.info(sp_data)
         with open(KSP, 'w') as file:
             ujson.dump(sp_data, file)
 

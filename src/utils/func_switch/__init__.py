@@ -22,8 +22,7 @@ def func_switcher(func_name: str, enabled: bool, group: Optional[str] = None) ->
     if group:
         if func_name not in data:
             data[func_name] = {}
-        else:
-            data[func_name][group] = str(enabled)
+        data[func_name][group] = str(enabled)
 
         with open(SWITCH_FILE, 'w') as file:
             ujson.dump(data, file)
@@ -34,8 +33,7 @@ def func_switcher(func_name: str, enabled: bool, group: Optional[str] = None) ->
 
     if func_name not in data:
         data[func_name] = {}
-    else:
-        data[func_name]["all_enabled"] = str(enabled)
+    data[func_name]["all_enabled"] = str(enabled)
 
     with open(SWITCH_FILE, 'w') as file:
         ujson.dump(data, file)

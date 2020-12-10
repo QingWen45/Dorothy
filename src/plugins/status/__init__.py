@@ -27,7 +27,7 @@ async def _(bot: Bot, event: Event, state: dict):
 
     msg = r"""  __                  _   _        
  |   \ ___ _ _ ___| |_| |_ _    _ 
- | |) / _ \ '_/ _ \  __|  ' \ | | |
+ | |) / _ \ '_/ _  \ __|  ' \ | | |
  |_ /\__/_| \___/\__|_||_\_, |
                                      |__/ """
     await bot.send(event, msg)

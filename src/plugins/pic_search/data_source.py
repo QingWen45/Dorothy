@@ -45,7 +45,7 @@ setu_api = configs["setu"]["API"]
 setu_key = configs["setu"]["KEY"]
 
 
-async def setu_linker(keyword=None, mode=0):
+async def setu_linker(user: str, keyword=None, mode=0):
     data = {"apikey": setu_key,
             "r18": mode,
             "num": 1,
