@@ -7,7 +7,8 @@
 # @E-mail : hurrsea@outlook.com
 
 import re
-from random import randint
+import ujson
+from pathlib import Path
 from datetime import datetime, timedelta
 from apscheduler.triggers.date import DateTrigger
 
@@ -15,11 +16,10 @@ from nonebot.rule import to_me
 from nonebot.log import logger
 from nonebot.sched import scheduler
 from nonebot.typing import Bot, Event
-from nonebot.permission import SUPERUSER
-from nonebot.plugin import on_command, on_message, on_regex
+from nonebot.plugin import on_command, on_regex
 
 from src.utils.utils import counter
-from src.utils.rules import is_banned
+from src.utils.rules import is_banned, is_enabled
 
 from .data_source import result_get, setu_linker
 
@@ -54,7 +54,8 @@ async def _(bot: Bot, event: Event, state: dict):
     await sauce_search.finish(msg[0])
 
 
-search_type = 0  # 0 is from url, while 1 is from local, 2 is closed
+_func_name = "gkd"
+search_type = 0  # 0 is from url, while 1 is from local
 lsp_list = {}
 lsp_stack = []
 
@@ -77,13 +78,14 @@ def de_lsp(user: str):
 
 setu_get = on_regex(
     r"来[点丶张份副个幅][涩色瑟][图圖]|[涩色瑟][图圖]来|[涩色瑟][图圖][gkd|GKD|搞快点]|[gkd|GKD|搞快点]",
-    rule=is_banned() & to_me())
+    rule=is_banned() & to_me() & is_enabled(_func_name, True))
 
 
 @setu_get.handle()
 async def _(bot: Bot, event: Event, state: dict):
     global lsp_stack
     user = str(event.user_id)
+    group = str(event.group_id)
 
     if check_list(user):
         await setu_get.finish("冲的太多了，休息一下吧")
@@ -99,6 +101,14 @@ async def _(bot: Bot, event: Event, state: dict):
                           misfire_grace_time=60)
         return
 
+    r18_switch = 0
+    ON_FILE = Path("./src/plugins/pic_search/on_list.json")
+    if ON_FILE.is_file():
+        with open(ON_FILE, 'r') as file:
+            data = ujson.load(file)
+        if group in data:
+            r18_switch = 1 if data[group] == "on" else 0
+
     args = str(event.message).strip().split()
     if len(args) > 1:
         state["keyword"] = args[1]
@@ -106,8 +116,53 @@ async def _(bot: Bot, event: Event, state: dict):
 
     if search_type == 0:
         key = state["keyword"] if "keyword" in state else None
-        setu = await setu_linker(key, mode=search_type)
+        setu = await setu_linker(key, mode=r18_switch)
         if not setu:
             await setu_get.finish("连接超时，涩图找丢了")
         lsp_stack.append(user)
+
+        # lsp榜单更新
+        if event.sender["card"] != "":
+            user_name = event.sender["card"]
+        else:
+            user_name = event.sender["nickname"]
+        KSP = Path("./src/plugins/pic_search/King_of_LSP.json")
+        if not KSP.is_file():
+            sp_data = {}
+        else:
+            with open(KSP, 'r') as f:
+                sp_data = ujson.load(f)
+        if group not in sp_data:
+            sp_data[group] = {}
+
+        if user not in sp_data:
+            sp_data[group][user_name] = 1
+        else:
+            sp_data[group][user_name] += 1
+        with open(KSP, 'w') as file:
+            ujson.dump(sp_data, file)
+
         await setu_get.finish(setu)
+
+
+lsp_rank = on_command("sprank", aliases={"lsp榜"})
+
+
+@lsp_rank.handle()
+async def _(bot: Bot, event: Event, state: dict):
+    KSP = Path("./src/plugins/pic_search/King_of_LSP.json")
+    if not KSP.is_file():
+        data = {}
+    else:
+        with open(KSP, 'r') as f:
+            data = ujson.load(f)
+    data = data.get(str(event.group_id), {})
+    rank = sorted(data.items(), key=lambda kv: (kv[1], kv[0]), reverse=True)
+    msg = "------+++LSP榜+++------\n"
+    size = 5 if len(rank) > 5 else len(rank)
+    for i in range(size):
+        if i != size - 1:
+            msg += str(i) + ". " + rank[i][0] + " ... " + str(rank[i][1]) + " 次！\n"
+        else:
+            msg += str(i) + ". " + rank[i][0] + " ... " + str(rank[i][1]) + " 次！"
+    await lsp_rank.finish(msg)
