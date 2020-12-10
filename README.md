@@ -40,6 +40,10 @@
 ，"gkd local"从本地发送涩图，由于涩图下载需要时间，这一段网速不好很容易失败。功能默认对某群关闭，switch gkd on/off 对某群改变状态，
 switch all-on/off 改变全局状态。
 
+#### sprank
+
+根据命令gkd调用次数生成sp榜单。
+
 #### 神秘开关 (at me & superuser)
 
 "e18on on/off"改变状态。
