@@ -71,7 +71,10 @@ def check_list(user: str) -> bool:
 
 def en_lsp(user: str):
     global lsp_list
-    lsp_list[user] += 1
+    if user not in lsp_list:
+        lsp_list[user] = 1
+    else:
+        lsp_list[user] += 1
 
 
 def de_lsp(user: str):
