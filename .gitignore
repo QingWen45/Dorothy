@@ -152,3 +152,4 @@ configs.yml~origin_master
 !/local_data/
 local_data/
 *.json
+configs.yml
