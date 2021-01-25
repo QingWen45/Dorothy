@@ -64,6 +64,8 @@ switch all-on/off 改变全局状态。
 
 本项目是利用了 *go-cqhttp* 项目和 *nonebot2* 和Jetbrains的Pycharm开发的，是在酷q离去后的选择。
 
+python3.7以上才可以运行，需要的包除了nb-cli外还有就是ujson。
+
 ## 后记
 
 我还不是很熟悉版本管理以及开源协议等方面的知识，还在努力自学中。
