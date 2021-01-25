@@ -9,8 +9,6 @@
 import os
 from pathlib import Path
 import httpx
-from random import sample
-import string
 from PIL import Image
 
 img_path = Path("./local_data/img").resolve()
@@ -31,7 +29,7 @@ async def download_img(name: str, url: str) -> Path:
 
 async def compress_img(img_loc: Path, kb=500, quality=80, k=0.9) -> str:
     if not compressed_path.exists():
-        compressed_path.mkdir()
+        compressed_path.mkdir(parents=True)
     img_size = os.path.getsize(img_loc) // 1024
     if img_size <= kb:
         return str(img_loc)

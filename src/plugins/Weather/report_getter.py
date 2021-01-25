@@ -10,7 +10,7 @@ import httpx
 from src.utils.yaml_loader import yml_loader
 from pathlib import Path
 
-YML = Path("D:/Dorothy/Dorothy/configs.yml")
+YML = Path("./configs.yml")
 api_config = yml_loader(YML)["hefeng"]
 key = api_config["KEY"]
 

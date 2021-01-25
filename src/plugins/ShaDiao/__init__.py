@@ -8,13 +8,14 @@
 
 import ujson
 import httpx
+import platform
 from pathlib import Path
 from random import choice, randint
 from datetime import date
 
 from nonebot.log import logger
 from nonebot.rule import to_me
-from nonebot.typing import Bot, Event
+from nonebot.adapters.cqhttp import Bot, Event
 from nonebot.plugin import on_command, on_notice, on_keyword
 
 from src.utils.utils import counter
@@ -29,54 +30,98 @@ notice_handler = on_notice(rule=is_banned(), block=True)
 
 @notice_handler.handle()
 async def _(bot: Bot, event: Event, state: dict):
-    if event.raw_event["notice_type"] == "group_increase":
-        if event.user_id == event.self_id:
+    if platform.system() == "Windows":
+        event_type = event.detail_type
+    else:
+        event_type = event.notice_type
+    if event_type == "group_increase":
+        if str(event.user_id) == str(event.self_id):
             await notice_handler.finish("大家好啊")
         else:
             await notice_handler.finish("欢迎新人")
 
-    elif event.raw_event["notice_type"] == "group_decrease":
-        if event.user_id != event.self_id:
+    elif event_type == "group_decrease":
+        if str(event.user_id) != str(event.self_id):
             await notice_handler.finish(f"{event.user_id} 退群了..")
 
-    elif event.raw_event["notice_type"] == "notify":
-        if event.raw_event["sub_type"] == "poke":
-            user = str(event.user_id)
-            LV = Path("./src/plugins/ShaDiao/love_value.json")
-            if not LV.is_file():
-                data = {}
-                with open(LV, 'w') as f:
-                    ujson.dump(data, f)
-            else:
-                with open(LV, 'r') as f:
-                    data = ujson.load(f)
-
-            if user not in data:
-                data[user] = [randint(1, 100), str(date.today())]
-                msg = f"Dorothy对 [CQ:at,qq={user}] 的初始好感为{data[user][0]}点"
-
-            else:
-                increment = 0
-                if str(date.today()) != data[user][1]:
-                    increment = randint(1, 3)
-                    data[user][0] += increment
+    elif event_type == "notify":
+        if event.sub_type == "poke":
+            if str(event.target_id) == str(event.self_id):
+                user = str(event.user_id)
+                LV = Path("./src/plugins/ShaDiao/love_value.json")
+                if not LV.is_file():
+                    data = {}
                 else:
-                    await notice_handler.finish("好感无法上升了")
+                    with open(LV, 'r') as f:
+                        data = ujson.load(f)
 
-                msg = f"对 [CQ:at,qq={user}] 的好感上升了{increment}点，变成{data[user][0]}点了"
+                if user not in data:
+                    data[user] = [randint(1, 100), str(date.today())]
+                    msg = [
+                        {
+                            "type": "text",
+                            "data": {"text": "Dorothy对 "}
+                        },
+                        {
+                            "type": "at",
+                            "data": {"qq": user}
+                        },
+                        {
+                            "type": "text",
+                            "data": {"text": f"的初始好感为{data[user][0]}点"}
+                        }
+                    ]
 
-            logger.info(data)
-            with open(LV, 'w') as file:
-                ujson.dump(data, file)
-            await notice_handler.finish(msg)
+                else:
+                    if str(date.today()) != data[user][1]:
+                        data[user][1] = str(date.today())
+                        increment = randint(1, 3)
+                        data[user][0] += increment
+                        if data[user][0] >= 100:
+                            data[user][0] = 100
+                            msg = [
+                                {
+                                    "type": "at",
+                                    "data": {"qq": user}
+                                },
+                                {
+                                    "type": "text",
+                                    "data": {"text": "好感满分！100点"}
+                                }
+                            ]
+                        else:
+                            msg = [
+                                {
+                                    "type": "text",
+                                    "data": {"text": "对"
+                                             }
+                                },
+                                {
+                                    "type": "at",
+                                    "data": {"qq": user}
+                                },
+                                {
+                                    "type": "text",
+                                    "data": {"text": f"的好感上升了{increment}点，变成{data[user][0]}点了"}
+                                }
+                            ]
+                    else:
+                        msg = "好感无法上升了"
 
-        elif event.raw_event["sub_type"] == "talkative":
+                with open(LV, 'w') as file:
+                    ujson.dump(data, file)
+                await notice_handler.finish(msg)
+
+        elif event.sub_type == "talkative":
             img_path = Path("./images/long_wang.jpg").resolve()
-            msg = f"[CQ:image,file=file:///{str(img_path)}]"
+            msg = {
+                "type": "image",
+                "data": {"file": f"file:///{str(img_path)}"}
+            }
             await notice_handler.finish(msg)
 
 
-nmsl = on_command("嘴臭", aliases={"口臭", "开骂"}, rule=to_me())
+nmsl = on_command("嘴臭", aliases={"口臭", "开骂"}, rule=to_me(), block=True)
 count_list_n = []
 
 
@@ -95,7 +140,7 @@ async def _(bot: Bot, event: Event, state: dict):
     await nmsl.finish(response.text)
 
 
-pyq = on_keyword({"朋友圈"}, rule=to_me())
+pyq = on_keyword({"朋友圈"}, rule=to_me(), block=True)
 
 
 @pyq.handle()
@@ -107,7 +152,7 @@ async def _(bot: Bot, event: Event, state: dict):
     await pyq.finish(response.text)
 
 
-chp = on_keyword({"夸"}, rule=to_me())
+chp = on_keyword({"夸"}, rule=to_me(), block=True)
 
 
 @chp.handle()
@@ -119,7 +164,7 @@ async def _(bot: Bot, event: Event, state: dict):
     await chp.finish(response.text)
 
 
-djt = on_keyword({"毒鸡汤"}, rule=to_me())
+djt = on_keyword({"毒鸡汤"}, rule=to_me(), block=True)
 
 
 @djt.handle()
@@ -131,7 +176,7 @@ async def _(bot: Bot, event: Event, state: dict):
     await djt.finish(response.text)
 
 
-trans = on_command("nbnhhsh", rule=to_me(),
+trans = on_command("nbnhhsh", rule=to_me(), block=True,
                    aliases={"屌话翻译器", "能不能好好说话", "屌话翻译机", "翻译机", "翻译器"})
 
 
@@ -154,25 +199,5 @@ async def _(bot: Bot, event: Event, state: dict):
     msg = "得到的翻译如下：\n"
     for i in response[0]["trans"]:
         msg += i + "，"
-    msg.strip("，")
+    msg = msg.strip("，")
     await trans.finish(msg)
-
-
-hitokoto = on_command("一言", rule=to_me())
-
-
-@hitokoto.handle()
-async def _(bot: Bot, event: Event, state: dict):
-    api = config["ad_api"]["hitokoto"]
-
-    async with httpx.AsyncClient() as client:
-        response = await client.get(api)
-    await hitokoto.finish(response.text)
-"""
-music = on_command("点歌", rule=to_me())
-
-
-@music.handle()
-async def _(bot: Bot, event: Event, state: dict):
-    music_id = choice(["1349937484", "1349927611", "1349932444", "1349929719"])
-"""

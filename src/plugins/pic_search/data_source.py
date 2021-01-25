@@ -9,6 +9,7 @@
 import httpx
 from pathlib import Path
 from random import choice
+
 from src.utils.yaml_loader import yml_loader
 from src.utils.img_utils import compress_img, download_img
 
@@ -30,16 +31,40 @@ async def result_get(user: str, img_url: str):
         response = response[0]
 
     if float(response["header"]["similarity"]) < 60:
-        return f"[CQ:at,qq={user}]\n找不到",
-    thumbnail = f"""[CQ:image,file={response["header"].get("thumbnail")}]"""
-    msg = f"""[CQ:at,qq={user}]
-SauceNAO Info:
+        msg = [
+            {
+                "type": "at",
+                "data": {"qq": user}
+            },
+            {
+                "type": "text",
+                "data": {"text": "寻找失败"}
+            }
+        ]
+        return msg
+
+    msg = [
+        {
+            "type": "at",
+            "data": {"qq": user}
+        },
+        {
+            "type": "image",
+            "data": {"file": response["header"].get("thumbnail")}
+        },
+        {
+            "type": "text",
+            "data": {"text": f"""SauceNAO Info:
 相似度: {response["header"].get("similarity", 0)}
 标题: {response["data"].get("title")}
 Pixiv ID: {response["data"].get("pixiv_id")}
 画师: {response["data"].get("member_name")}
 画师ID: {response["data"].get("member_id")}"""
-    return [msg, thumbnail]
+                     }
+        }
+    ]
+
+    return msg
 
 
 setu_api = configs["setu"]["API"]
@@ -67,24 +92,47 @@ async def setu_linker(user: str, keyword=None, mode=0):
 
         img_loc = await download_img(img_data["pid"], img_data["url"])
         img_loc = await compress_img(img_loc)
-
-        msg = f"""[CQ:at,qq={user}]
-SETU Info:
+        msg = [
+            {
+                "type": "at",
+                "data": {"qq": user}
+            },
+            {
+                "type": "text",
+                "data": {"text": f"""SETU Info:
 标题: {img_data["title"]}
-Pid: {img_data["pid"]}
-[CQ:image,file=file:///{img_loc}]"""
+Pid: {img_data["pid"]}"""
+                         }
+            },
+            {
+                "type": "image",
+                "data": {"file": f"file:///{img_loc}"}
+            }
+        ]
         return msg
     except Exception:
         return ""
 
 
-async def setu_loader(user: str) -> str:
+async def setu_loader(user: str):
     img_file = Path("./local_data/compressed")
     images = list(img_file.iterdir())
     img_loc = choice(images).resolve()
     Pid = img_loc.stem
-    msg = f"""[CQ:at,qq={user}]
-SETU Info:
-Pid: {Pid}
-[CQ:image,file=file:///{str(img_loc)}]"""
+    msg = [
+        {
+            "type": "at",
+            "data": {"qq": user}
+        },
+        {
+            "type": "text",
+            "data": {"text": f"""SETU Info:
+Pid: {Pid}"""
+                     }
+        },
+        {
+            "type": "image",
+            "data": {"file": f"file:///{str(img_loc)}"}
+        }
+    ]
     return msg

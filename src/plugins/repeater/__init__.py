@@ -13,7 +13,7 @@ from random import randint
 from typing import Dict
 from dataclasses import dataclass
 
-from nonebot.typing import Bot, Event
+from nonebot.adapters.cqhttp import Bot, Event
 from nonebot.plugin import on_command, on_message
 from nonebot.log import logger
 
@@ -57,7 +57,7 @@ async def _(bot: Bot, event: Event, state: dict):
         return
 
     rec = records.get(group)
-    if rec.last_msg != msg:
+    if rec.last_msg != msg or rec.last_user_id == user_id:
         rec.last_msg = msg
         rec.repeat_count = 1
         return

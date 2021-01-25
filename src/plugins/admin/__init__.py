@@ -9,14 +9,14 @@
 import ujson
 from pathlib import Path
 
-from nonebot.typing import Bot, Event
+from nonebot.adapters.cqhttp import Bot, Event
 from nonebot.log import logger
 from nonebot.plugin import on_command
-from nonebot.permission import SUPERUSER, GROUP_ADMIN, GROUP_OWNER
+from nonebot.permission import SUPERUSER
 
 from src.utils.func_switch import func_switcher
 
-switch = on_command("switch", permission=(SUPERUSER | GROUP_OWNER | GROUP_ADMIN))
+switch = on_command("switch", permission=SUPERUSER)
 
 
 @switch.handle()
@@ -46,10 +46,10 @@ to swtich func for all"""
         await switch.finish(func_switcher(args[0], False))
 
     else:
-        await switch.finish("Worng 嘞")
+        await switch.finish("出错嘞")
 
 
-switch_ex = on_command("e18on", permission=SUPERUSER)
+switch_ex = on_command("R18", permission=SUPERUSER)
 
 
 @switch_ex.handle()
